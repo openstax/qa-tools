@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name     Openstax QA Helpers
-// @version  1
+// @version  2
 // @grant    none
 // @include https://cnx.org/*
 // @include https://*.cnx.org/*
@@ -44,9 +44,15 @@
             }
         }
 
-        /* Style footnotes so that they stand out */
-        [role="doc-footnote"] { background-color: #ffcccc; border: 1px dashed #ff0000; }
-        [role="doc-footnote"]:before { content: "FOOTNOTE " ; }
+        /* Style new-style footnotes so that they stand out */
+        [role="doc-footnote"] { background-color: #ccffcc; border: 1px dashed #ff0000; }
+        [role="doc-footnote"]:before { content: "FOOTNOTE (new) " ; }
+
+        /* Style old-style footnotes so that they stand out */
+        [data-type="footnote-refs-title"],
+        [data-type="footnote-number"] { background-color: #ff0000; }
+        [data-type="footnote-refs-title"]:after,
+        [data-type="footnote-number"]:after { content: "(old)"; }
 
         /* Show a permalink when hovering over a heading or paragraph */
         *:not(:hover) > a.-permalinker { display: none; }
@@ -72,6 +78,7 @@
     ].join(', ')
 
     const grandHeadingsSelector = [
+        '*[id] > * > .os-title:not([data-dev-has-permalink])',
         '*[id] > header > h1:not([data-dev-has-permalink])',
         '*[id] > header > h2:not([data-dev-has-permalink])',
         '*[id] > header > h3:not([data-dev-has-permalink])',
