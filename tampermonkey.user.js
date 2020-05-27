@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name     Openstax QA Helpers
-// @version  2
+// @version  3
 // @grant    none
 // @include https://cnx.org/*
 // @include https://*.cnx.org/*
@@ -11,7 +11,7 @@
 // This is a TamperMonkey and Greasemonkey script to make it easier to QA content
 // 
 // 1. Install TamperMonkey: https://www.tampermonkey.net
-// 2. Install this script: https://openstax.github.io/qa-tools/tampermonkey.js
+// 2. Install this script: https://openstax.github.io/qa-tools/tampermonkey.user.js
 //            (assuming this repo is still named "qa-tools")
 //
 // Users will get updates whenever this file changes (Daily)
@@ -28,7 +28,7 @@
 
         /* Linking to a specific element should highlight the element */
         :target {
-            background-color: #ffffcc;
+            background-color: #ffffcc !important;
             border: 1px dotted #000000;
 
             animation-name: cssAnimation;
@@ -45,14 +45,14 @@
         }
 
         /* Style new-style footnotes so that they stand out */
-        [role="doc-footnote"] { background-color: #ccffcc; border: 1px dashed #ff0000; }
+        [role="doc-footnote"] { background-color: #ccffcc; }
         [role="doc-footnote"]:before { content: "FOOTNOTE (new) " ; }
 
         /* Style old-style footnotes so that they stand out */
         [data-type="footnote-refs-title"],
-        [data-type="footnote-number"] { background-color: #ff0000; }
+        [data-type="footnote-number"] { background-color: #ff6666; }
         [data-type="footnote-refs-title"]:after,
-        [data-type="footnote-number"]:after { content: "(old)"; }
+        [data-type="footnote-number"]:after { content: " (old)"; }
 
         /* Show a permalink when hovering over a heading or paragraph */
         *:not(:hover) > a.-permalinker { display: none; }
