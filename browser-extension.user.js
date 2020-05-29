@@ -11,7 +11,7 @@
 // This is a TamperMonkey and Greasemonkey script to make it easier to QA content
 // 
 // 1. Install TamperMonkey: https://www.tampermonkey.net
-// 2. Install this script: https://openstax.github.io/qa-tools/tampermonkey.user.js
+// 2. Install this script: https://openstax.github.io/qa-tools/browser-extension.user.js
 //            (assuming this repo is still named "qa-tools")
 //
 // Users will get updates whenever this file changes (Daily)
