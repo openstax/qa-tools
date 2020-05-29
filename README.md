@@ -14,3 +14,14 @@ Steps to install:
 1. Click this link to install the browser extension: https://openstax.github.io/qa-tools/browser-extension.user.js
 
 Users will get updates whenever this file changes (Daily)
+
+
+## Compare PDFs
+
+[./compare_pdfs.bash](./compare_pdfs.bash) compares 2 PDFs page-by-page by converting each page to an image and then diffing the image.
+
+An optional 3rd argument allows you to only compare the first N pages (to speed up the process).
+
+It currently stops at the first page that differs but it could instead generate diff files of all the pages before completing.
+
+It sets a non-zero exit status when the PDFs differ.
