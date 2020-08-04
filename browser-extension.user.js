@@ -6,10 +6,11 @@
 // @include https://*.cnx.org/*
 // @include https://openstax.org/*
 // @include https://*.openstax.org/*
+// @include https://rex-web*.herokuapp.com/*
 // ==/UserScript==
 
 // This is a TamperMonkey and Greasemonkey script to make it easier to QA content
-// 
+//
 // 1. Install TamperMonkey: https://www.tampermonkey.net
 // 2. Install this script: https://openstax.github.io/qa-tools/browser-extension.user.js
 //            (assuming this repo is still named "qa-tools")
@@ -61,6 +62,12 @@
             font-weight: bold;
             text-decoration: none;
         }
+
+        /* Each REX spymode item should be on a separate line and have padding below */
+        #rex-spymode > * {
+            display: block;
+            margin-bottom: 1rem;
+        }
 `
 
     window.document.head.appendChild(style)
@@ -104,8 +111,67 @@
         Array.from(window.document.querySelectorAll(grandHeadingsSelector)).forEach(h => addPermalink(h, h.parentElement.parentElement.getAttribute('id')) )
     }
 
+    function addRexSpymode() {
+        function renderSpymode() {
+            // only run on REX sites
+            if (!window.__APP_STORE) {
+                return
+            }
+
+            const state = window.__APP_STORE.getState().content
+
+            let root = document.querySelector('#rex-spymode')
+            if (root) {
+                root.innerHTML = ''
+            } else {
+                root = document.createElement('div')
+                root.setAttribute('id', 'rex-spymode')
+                document.body.append(root)
+            }
+
+            const heading = document.createElement('h2')
+            heading.append('Debugging area')
+
+            const linkToSource = document.createElement('a')
+            linkToSource.setAttribute('href', 'https://github.com/openstax/qa-tools')
+            linkToSource.setAttribute('target', '_window')
+            linkToSource.append('Source Code for this debugging info')
+
+            const rerender = document.createElement('button')
+            rerender.append('Update')
+            rerender.addEventListener('click', renderSpymode)
+
+            const bookVerText = document.createElement('p')
+            bookVerText.append(`Book Version: ${state.book.version}`)
+
+            const linkToCnx = document.createElement('a')
+            linkToCnx.setAttribute('href', `https://vendor.cnx.org/contents/${state.book.id}@${state.book.version}:${state.page.id}`)
+            linkToCnx.setAttribute('target', '_window')
+            linkToCnx.append(`See "${state.page.title}" on Cnx`)
+
+            const linkToArchive = document.createElement('a')
+            linkToArchive.setAttribute('href', `https://archive.cnx.org/contents/${state.book.id}@${state.book.version}:${state.page.id}`)
+            linkToArchive.setAttribute('target', '_window')
+            linkToArchive.append(`See "${state.page.title}" on Archive`)
+
+            root.append(heading)
+            root.append(bookVerText)
+            root.append(linkToCnx)
+            root.append(linkToArchive)
+            root.append(rerender)
+            root.append(linkToSource)
+        }
+
+        renderSpymode()
+    }
+
+    function doAllTheThings() {
+        addLinks()
+        addRexSpymode()
+    }
+
     // Loop because SinglePageApps reload the content
-    setInterval(addLinks, 5 * 1000)
-    addLinks()
+    setInterval(doAllTheThings, 5 * 1000)
+    doAllTheThings()
 
 })();
