@@ -63,6 +63,14 @@
             text-decoration: none;
         }
 
+        #rex-spymode {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            background-color: rgba(255,255,255,.8);
+            padding: 1rem;
+            border: 1px dashed #000;
+        }
         /* Each REX spymode item should be on a separate line and have padding below */
         #rex-spymode > * {
             display: block;
@@ -111,10 +119,11 @@
         Array.from(window.document.querySelectorAll(grandHeadingsSelector)).forEach(h => addPermalink(h, h.parentElement.parentElement.getAttribute('id')) )
     }
 
+    let keepClosed = false
     function addRexSpymode() {
         function renderSpymode() {
             // only run on REX sites
-            if (!window.__APP_STORE) {
+            if (!window.__APP_STORE || keepClosed) {
                 return
             }
 
@@ -130,7 +139,14 @@
             }
 
             const heading = document.createElement('h2')
-            heading.append('Debugging area')
+            const close = document.createElement('button')
+            close.addEventListener('click', () => {
+                keepClosed = true
+                root.innerHTML = ''
+            })
+            close.append('X')
+            heading.append(close)
+            heading.append(' Spymode')
 
             const linkToSource = document.createElement('a')
             linkToSource.setAttribute('href', 'https://github.com/openstax/qa-tools')
