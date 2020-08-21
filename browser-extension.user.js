@@ -129,6 +129,11 @@
 
             const state = window.__APP_STORE.getState().content
 
+            // REX loads dynamically so the state may not be available yet. Try again later
+            if (!state.book) {
+                return
+            }
+
             let root = document.querySelector('#rex-spymode')
             if (root) {
                 root.innerHTML = ''
