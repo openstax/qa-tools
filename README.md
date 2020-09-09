@@ -4,11 +4,22 @@ A repository for QA tools and scripts
 
 ## Browser Extension
 
-So far, this extension makes it easier to see content on our pages and link to it.
+This extension currently provides a few features:
+
+- makes it easier to link to a specific place in our content (REX, cnx, or archive)
+- makes it easier to see the specific element that is being linked to
+- provides data about the content on REX and links to view it
 
 Future iterations may include a way to do things like "show class names".
 
+#### REX Spymode
+
+![image](https://user-images.githubusercontent.com/253202/89323538-77dbb480-d64b-11ea-8d6a-ebf6a67f5af3.png)
+
+#### Creating deep links inside our content
+
 ![pilcrow links and footnotes](https://user-images.githubusercontent.com/253202/83660283-3f0b5a80-a58a-11ea-9d01-3c59feb1859b.gif)
+
 
 ### Install
 
