@@ -123,11 +123,11 @@
     function addRexSpymode() {
         function renderSpymode() {
             // only run on REX sites
-            if (!window.__APP_STORE || keepClosed) {
+            if (!(window.__APP_STORE || unsafeWindow.__APP_STORE) || keepClosed) {
                 return
             }
 
-            const state = window.__APP_STORE.getState().content
+            const state = (window.__APP_STORE || unsafeWindow.__APP_STORE).getState().content
 
             // REX loads dynamically so the state may not be available yet. Try again later
             if (!state.book) {
