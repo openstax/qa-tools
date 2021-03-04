@@ -133,6 +133,8 @@
             if (!state.book) {
                 return
             }
+          
+            const queryParams = new URLSearchParams(window.location.search)
 
             let root = document.querySelector('#rex-spymode')
             if (root) {
@@ -152,6 +154,7 @@
             close.append('X')
             heading.append(close)
             heading.append(' Spymode')
+            root.append(heading)
 
             const linkToSource = document.createElement('a')
             linkToSource.setAttribute('href', 'https://github.com/openstax/qa-tools')
@@ -164,19 +167,18 @@
 
             const bookVerText = document.createElement('p')
             bookVerText.append(`Book Version: ${state.book.version}`)
+            root.append(bookVerText)
 
-            const linkToCnx = document.createElement('a')
-						if (state.book && state.page) {
+						if (state.book && state.page && !queryParams.get('archive')) {
+              const linkToCnx = document.createElement('a')
               linkToCnx.setAttribute('href', `https://vendor.cnx.org/contents/${state.book.id}@${state.book.version}:${state.page.id}`)
               linkToCnx.setAttribute('target', '_window')
               linkToCnx.append(`See "${state.page.title}" on Cnx`)
-            } else {
-              linkToCnx.append('Maybe Uh-Oh error popped up? No book/page information')
+              root.append(linkToCnx)
             }
 
-            const linkToArchive = document.createElement('a')
             if (state.book && state.page) {
-              const queryParams = new URLSearchParams(window.location.search)
+              const linkToArchive = document.createElement('a')
               let archiveRoot = 'https://archive.cnx.org'
               let extension = ''
               let archiveName = 'Archive (old)'
@@ -188,14 +190,9 @@
               linkToArchive.setAttribute('href', `${archiveRoot}/contents/${state.book.id}@${state.book.version}:${state.page.id}${extension}`)
               linkToArchive.setAttribute('target', '_window')
               linkToArchive.append(`See "${state.page.title}" on ${archiveName}`)
-            } else {
-              linkToCnx.append('Maybe Uh-Oh error popped up? No book/page information')
+              root.append(linkToArchive)
             }
-          
-            root.append(heading)
-            root.append(bookVerText)
-            root.append(linkToCnx)
-            root.append(linkToArchive)
+
             root.append(rerender)
             root.append(linkToSource)
         }
