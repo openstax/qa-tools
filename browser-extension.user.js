@@ -166,15 +166,32 @@
             bookVerText.append(`Book Version: ${state.book.version}`)
 
             const linkToCnx = document.createElement('a')
-            linkToCnx.setAttribute('href', `https://vendor.cnx.org/contents/${state.book.id}@${state.book.version}:${state.page.id}`)
-            linkToCnx.setAttribute('target', '_window')
-            linkToCnx.append(`See "${state.page.title}" on Cnx`)
+						if (state.book && state.page) {
+              linkToCnx.setAttribute('href', `https://vendor.cnx.org/contents/${state.book.id}@${state.book.version}:${state.page.id}`)
+              linkToCnx.setAttribute('target', '_window')
+              linkToCnx.append(`See "${state.page.title}" on Cnx`)
+            } else {
+              linkToCnx.append('Maybe Uh-Oh error popped up? No book/page information')
+            }
 
             const linkToArchive = document.createElement('a')
-            linkToArchive.setAttribute('href', `https://archive.cnx.org/contents/${state.book.id}@${state.book.version}:${state.page.id}`)
-            linkToArchive.setAttribute('target', '_window')
-            linkToArchive.append(`See "${state.page.title}" on Archive`)
-
+            if (state.book && state.page) {
+              const queryParams = new URLSearchParams(window.location.search)
+              let archiveRoot = 'https://archive.cnx.org'
+              let extension = ''
+              let archiveName = 'Archive (old)'
+              if (queryParams.get('archive')) {
+                archiveRoot = queryParams.get('archive')
+                extension = '.xhtml'
+                archiveName = 'S3 (preview)'
+              }
+              linkToArchive.setAttribute('href', `${archiveRoot}/contents/${state.book.id}@${state.book.version}:${state.page.id}${extension}`)
+              linkToArchive.setAttribute('target', '_window')
+              linkToArchive.append(`See "${state.page.title}" on ${archiveName}`)
+            } else {
+              linkToCnx.append('Maybe Uh-Oh error popped up? No book/page information')
+            }
+          
             root.append(heading)
             root.append(bookVerText)
             root.append(linkToCnx)
