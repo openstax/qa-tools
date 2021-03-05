@@ -133,6 +133,8 @@
             if (!state.book) {
                 return
             }
+          
+            const queryParams = new URLSearchParams(window.location.search)
 
             let root = document.querySelector('#rex-spymode')
             if (root) {
@@ -152,6 +154,7 @@
             close.append('X')
             heading.append(close)
             heading.append(' Spymode')
+            root.append(heading)
 
             const linkToSource = document.createElement('a')
             linkToSource.setAttribute('href', 'https://github.com/openstax/qa-tools')
@@ -164,21 +167,32 @@
 
             const bookVerText = document.createElement('p')
             bookVerText.append(`Book Version: ${state.book.version}`)
-
-            const linkToCnx = document.createElement('a')
-            linkToCnx.setAttribute('href', `https://vendor.cnx.org/contents/${state.book.id}@${state.book.version}:${state.page.id}`)
-            linkToCnx.setAttribute('target', '_window')
-            linkToCnx.append(`See "${state.page.title}" on Cnx`)
-
-            const linkToArchive = document.createElement('a')
-            linkToArchive.setAttribute('href', `https://archive.cnx.org/contents/${state.book.id}@${state.book.version}:${state.page.id}`)
-            linkToArchive.setAttribute('target', '_window')
-            linkToArchive.append(`See "${state.page.title}" on Archive`)
-
-            root.append(heading)
             root.append(bookVerText)
-            root.append(linkToCnx)
-            root.append(linkToArchive)
+
+            if (state.book && state.page && !queryParams.get('archive')) {
+                const linkToCnx = document.createElement('a')
+                linkToCnx.setAttribute('href', `https://vendor.cnx.org/contents/${state.book.id}@${state.book.version}:${state.page.id}`)
+                linkToCnx.setAttribute('target', '_window')
+                linkToCnx.append(`See "${state.page.title}" on Cnx`)
+                root.append(linkToCnx)
+            }
+
+            if (state.book && state.page) {
+                const linkToArchive = document.createElement('a')
+                let archiveRoot = 'https://archive.cnx.org'
+                let extension = ''
+                let archiveName = 'Archive (old)'
+                if (queryParams.get('archive')) {
+                    archiveRoot = queryParams.get('archive')
+                    extension = '.xhtml'
+                    archiveName = 'S3 (preview)'
+                }
+                linkToArchive.setAttribute('href', `${archiveRoot}/contents/${state.book.id}@${state.book.version}:${state.page.id}${extension}`)
+                linkToArchive.setAttribute('target', '_window')
+                linkToArchive.append(`See "${state.page.title}" on ${archiveName}`)
+                root.append(linkToArchive)
+            }
+
             root.append(rerender)
             root.append(linkToSource)
         }
