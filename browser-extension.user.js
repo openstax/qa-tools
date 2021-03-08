@@ -76,6 +76,13 @@
             display: block;
             margin-bottom: 1rem;
         }
+        #rex-spymode #error-message:before {
+            content: 'Error Message: ';
+            font-weight: bold;
+        }
+        #rex-spymode #error-message {
+            color: red;
+        }
 `
 
     window.document.head.appendChild(style)
@@ -120,20 +127,18 @@
     }
 
     let keepClosed = false
+    let errorInfo = null
     function addRexSpymode() {
         function renderSpymode() {
             // only run on REX sites
-            if (!(window.__APP_STORE || unsafeWindow.__APP_STORE) || keepClosed) {
+            const reduxRoot = window.__APP_STORE || unsafeWindow.__APP_STORE
+            if (!reduxRoot || keepClosed) {
                 return
             }
+            const reduxState = reduxRoot.getState()
+            errorInfo = reduxState.errors.error || errorInfo // Redux clears the error eventually
+            const contentState = reduxState.content
 
-            const state = (window.__APP_STORE || unsafeWindow.__APP_STORE).getState().content
-
-            // REX loads dynamically so the state may not be available yet. Try again later
-            if (!state.book) {
-                return
-            }
-          
             const queryParams = new URLSearchParams(window.location.search)
 
             let root = document.querySelector('#rex-spymode')
@@ -165,19 +170,19 @@
             rerender.append('Update')
             rerender.addEventListener('click', renderSpymode)
 
-            const bookVerText = document.createElement('p')
-            bookVerText.append(`Book Version: ${state.book.version}`)
-            root.append(bookVerText)
-
-            if (state.book && state.page && !queryParams.get('archive')) {
-                const linkToCnx = document.createElement('a')
-                linkToCnx.setAttribute('href', `https://vendor.cnx.org/contents/${state.book.id}@${state.book.version}:${state.page.id}`)
-                linkToCnx.setAttribute('target', '_window')
-                linkToCnx.append(`See "${state.page.title}" on Cnx`)
-                root.append(linkToCnx)
-            }
-
-            if (state.book && state.page) {
+            if (contentState.book) {
+                const bookVerText = document.createElement('p')
+                bookVerText.append(`Book Version: ${contentState.book.version}`)
+                root.append(bookVerText)
+    
+                if (contentState.page && !queryParams.get('archive')) {
+                    const linkToCnx = document.createElement('a')
+                    linkToCnx.setAttribute('href', `https://vendor.cnx.org/contents/${contentState.book.id}@${contentState.book.version}:${contentState.page.id}`)
+                    linkToCnx.setAttribute('target', '_window')
+                    linkToCnx.append(`See "${contentState.page.title}" on Cnx`)
+                    root.append(linkToCnx)
+                }
+    
                 const linkToArchive = document.createElement('a')
                 let archiveRoot = 'https://archive.cnx.org'
                 let extension = ''
@@ -187,10 +192,24 @@
                     extension = '.xhtml'
                     archiveName = 'S3 (preview)'
                 }
-                linkToArchive.setAttribute('href', `${archiveRoot}/contents/${state.book.id}@${state.book.version}:${state.page.id}${extension}`)
+                const pagePart = contentState.page ? `:${contentState.page.id}` : ''
+                linkToArchive.setAttribute('href', `${archiveRoot}/contents/${contentState.book.id}@${contentState.book.version}${pagePart}${extension}`)
                 linkToArchive.setAttribute('target', '_window')
-                linkToArchive.append(`See "${state.page.title}" on ${archiveName}`)
+                if (contentState.page) {
+                    linkToArchive.append(`See "${contentState.page.title}" on ${archiveName}`)
+                } else {
+                    linkToArchive.append(`See Book on ${archiveName}`)
+                }
                 root.append(linkToArchive)
+    
+            }
+
+            if (errorInfo) {
+                const errorBox = document.createElement('div')
+                errorBox.setAttribute('id', 'error-message')
+                errorBox.append(errorInfo.message)
+                console.error(errorInfo)
+                root.append(errorBox)
             }
 
             root.append(rerender)
