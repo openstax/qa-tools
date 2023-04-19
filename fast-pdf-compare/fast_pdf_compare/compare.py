@@ -34,7 +34,7 @@ def compare_pdfs(path_a, path_b):
     pdf_a = Pdf.open(path_a)
     pdf_b = Pdf.open(path_b)
 
-    print(f"{len(pdf_a.pages)} total pages")
+    print(f"{len(pdf_a.pages)} total pages", file=sys.stderr)
 
     count = 0
 
@@ -45,7 +45,7 @@ def compare_pdfs(path_a, path_b):
         hash_b = page_hash(page_b)
 
         if hash_a != hash_b:
-            print(f"page {page_number + 1} has differences")
+            print(f"page {page_number + 1} has differences", file=sys.stderr)
 
             before = page_image(page_a)
             after = page_image(page_b)
@@ -57,7 +57,7 @@ def compare_pdfs(path_a, path_b):
 
             count += 1
 
-    print(f"{count} pages have differences")
+    print(f"{count} pages have differences", file=sys.stderr)
 
 
 def main():
