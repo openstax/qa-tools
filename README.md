@@ -32,6 +32,25 @@ Users will get updates whenever [this file](./browser-extension.user.js) changes
 
 ## Compare PDFs
 
+### Fast PDF compare
+
+There is a faster, dockerized version of pdf comparison. The only catch is that the fast version assumes that pdf page md5 hashes only change when visual changes occur (seems true so far).
+
+To run this version from the `qa-tools/fast-pdf-compare` directory, do...
+
+```bash
+./compare.bash <pdf-a> <pdf-b>
+```
+
+Both PDF files must be in the same directory. Example output:
+
+    633 total pages
+    0 pages have differences
+
+If there are differences, images depicting those differences will be in a directory next to the pdf files you compared. For example, if I ran `./compare.bash ../../../something/calculus-volume-1--*.pdf`, the images showing the differences, if any, would be in `../../../something`
+
+### Slow PDF compare
+
 [./compare_pdfs.bash](./compare_pdfs.bash) compares 2 PDFs page-by-page by converting each page to an image and then diffing the image.
 
 An optional 3rd argument allows you to only compare the first N pages (to speed up the process).

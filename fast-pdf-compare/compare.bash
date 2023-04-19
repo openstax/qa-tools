@@ -14,7 +14,7 @@ B_FILE="$(basename "$B")"
 IMAGE_NAME="fast-pdf-compare"
 
 if [[ "$A_DIR" != "$B_DIR" ]]; then
-    echo "PDF files need to be in the same directory"
+    echo "PDF files need to be in the same directory" >&2
     exit 1
 fi
 
