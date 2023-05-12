@@ -225,8 +225,16 @@
             max-height: 40rem;
           }
 
-          #bot-log li {
+          #bot-log > li {
             overflow: initial;
+            list-style-type: none;
+            background-color: lightblue;
+            list-style-type: none;
+            border-width; 0.2em;
+            border-radius: 2em;
+            padding: 0.8em 1.4em;
+            margin-bottom: 1em;
+            margin-right: 1em;
           }
 
   `;
