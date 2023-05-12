@@ -431,7 +431,7 @@
             p.style = 'background-color: red;'
             p.title = respText.trim()
             const bold = document.createElement('b')
-            bold.innerText = `(⚠️: ${respText.trim()})`
+            bold.innerText = `(⚠️: ${respText.trim()}) `
             p.prepend(bold)
           }
           p.title = respText.trim()
