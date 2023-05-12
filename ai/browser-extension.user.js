@@ -325,16 +325,12 @@
           fallaciesBtn.disabled = false;
           console.log("Generated text:", response);
           const respText = response.choices[0].text;
-          const li = document.createElement("li");
-          li.innerHTML = respText;
-          botLog.append(li);
-
           if (/[nN]one/.test(respText) || /no.*logic.*fallac/.test(respText)) {
             p.style = 'background-color: #cfc;'
           } else {
             p.style = 'background-color: red;'
           }
-          p.title = respText
+          p.title = respText.trim()
         } catch (e) {
           fallaciesBtn.disabled = false;
           console.error("Error:", e);
