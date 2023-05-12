@@ -76,7 +76,6 @@
 
     attach() {
       this.highlightableElements.forEach((e, idx) => {
-        console.log(e)
         this.elemMap[idx] = { selected: false, elem: e }
         this.handleEl(idx, e, true)
       })
@@ -96,7 +95,8 @@
     apiKey = prompt('Enter an OpenAPI key:')
     GM_setValue('openapi-key', apiKey)
   }
-  const apiEndpoint = "https://api.openai.com/v1/engines/text-davinci-003/completions";
+  const apiEndpoint =
+    "https://api.openai.com/v1/engines/text-davinci-003/completions";
 
   async function generateText(prompt) {
     return new Promise((resolve, reject) => {
@@ -129,15 +129,23 @@
     });
   }
 
-  function doThing(btn, promptFn) {
+  function doThing(btn, promptFn, formatter) {
     function handler() {
       btn.disabled = true;
       // Example usage:
-      generateText(promptFn())
+      const prompt = promptFn()
+      if (!prompt) {
+        btn.disabled = false
+        return
+      }
+      generateText(prompt)
         .then((response) => {
           btn.disabled = false;
           console.log("Generated text:", response);
-          const respText = response.choices[0].text;
+          let respText = response.choices[0].text;
+          if (formatter) {
+            respText = formatter(respText)
+          }
           const li = document.createElement("li");
           li.innerHTML = respText;
           botLog.append(li);
@@ -151,6 +159,24 @@
     btn.addEventListener("click", handler);
   }
 
+  function formatMultipleChoice(response) {
+    console.log(response)
+    let json = JSON.parse(response)
+    let result = ''
+    for (let item of json) {
+      result += `\
+      <div>
+      <strong>${item.question}</strong>
+      <ul>
+        ${item.options.map(option => `<li>${option}</li>`).join(`\n`)}
+      </ul>
+      </div>
+      `
+    }
+
+    return result
+  }
+
   const style = window.document.createElement("style");
   style.textContent = `/* Greasemonkey-injected styling */
 
@@ -162,7 +188,7 @@
               padding: 1rem;
               border: 1px dashed #000;
               z-index: 1000;
-              width: 25rem;
+              width: 50rem;
           }
           /* Each REX spymode item should be on a separate line and have padding below */
           #rex-spymode > * {
@@ -206,13 +232,13 @@
 
   const highlightHandler = new HighlightHandler()
   const heading = document.createElement("h2");
-  const close = document.createElement("button");
-  close.addEventListener("click", () => {
-    keepClosed = true;
-    root.innerHTML = "";
-  });
-  close.append("X");
-  heading.append(close);
+//  const close = document.createElement("button");
+//  close.addEventListener("click", () => {
+//    keepClosed = true;
+//    root.innerHTML = "";
+//  });
+//  close.append("X");
+//  heading.append(close);
   heading.append(
     ` ${nameOptions[Math.round(Math.random(nameOptions.length))]}`
   );
@@ -229,7 +255,23 @@
       const selectedText = highlightHandler.selectedText
       return selectedText.length
         ? `Summarize the following text in 100 words or less: ${selectedText}`
-        : `Summarize the following URL in 100 words or less: ${document.location.href}`
+        : `Summarize the following URL in 100 words: ${document.location.href}`
+    }
+  );
+
+  const explainBtn = findOrMake("bot-explain", "button", root);
+  explainBtn.textContent = "Explain";
+  doThing(
+    explainBtn,
+    () => {
+      const selectedText = highlightHandler.selectedText
+
+      if (selectedText.length) {
+        return `Explain the concepts in the following text like I'm 5: ${selectedText}`
+      } else {
+        alert("Please select some content!")
+        return
+      }
     }
   );
 
@@ -237,8 +279,29 @@
   multipleChoiceBtn.textContent = "Multiple Choice";
   doThing(
     multipleChoiceBtn,
-    () =>
-      `Generate 3 multiple choice questions from the following URL in HTML: ${document.location.href}`
+    () => {
+      const selectedText = highlightHandler.selectedText
+      const format = `in the following format: [{"question": "What color is the sky?", "options": ["red", "blue", "yellow"], "answer": 2}, ...]`
+      return selectedText.length
+        ? `Generate 3 multiple choice questions in JSON format from the following text: ${selectedText}` + format
+        : `Generate 3 multiple choice questions in JSON format from the following URL in HTML: ${document.location.href}` + format
+    },
+    formatMultipleChoice
+  );
+
+  const fillingBlankBtn = findOrMake("bot-fillingblank", "button", root);
+  fillingBlankBtn.textContent = "Filling the Blank";
+  doThing(
+    fillingBlankBtn,
+    () => {
+      const selectedText = highlightHandler.selectedText
+      if (selectedText.length) {
+        return `Create 3 main concept sentences about the following content and display the most important keyword as a blank ______ : ${selectedText}`
+      } else {
+        alert("Please select some content!")
+        return
+      }
+    }
   );
 
   // Pages to demo:
@@ -278,10 +341,6 @@
         }
       }
   });
-
-
-
-
 
   setTimeout(
       () => highlightHandler.attach(),
