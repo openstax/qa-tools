@@ -134,6 +134,7 @@
   function doThing(btn, promptFn, formatter) {
     function handler() {
       btn.disabled = true;
+      botLog.append(typingIndicator())
       // Example usage:
       const prompt = promptFn()
       if (!prompt) {
@@ -146,6 +147,7 @@
           console.log("Generated text:", response);
           let respText = response.choices[0].text;
           const li = document.createElement("li");
+          botLog.removeChild(botLog.lastChild)
           botLog.append(li);
           if (formatter) {
             li.append(formatter(respText));
@@ -155,6 +157,7 @@
         })
         .catch((error) => {
           btn.disabled = false;
+          botLog.removeChild(botLog.lastChild)
           console.error("Error:", error);
         });
     }
@@ -234,7 +237,79 @@
             border-radius: 2em;
             padding: 0.8em 1.4em;
             margin-bottom: 1em;
-            margin-right: 1em;
+            margin-right: 1em; 
+          }
+          .typing-indicator {
+            background-color: #E6E7ED;
+            will-change: transform;
+            width: 50px;
+            border-radius: 10px;
+            padding: 10px;
+            display: table;
+            margin: 0 auto;
+            position: relative;
+            -webkit-animation: 2s bulge infinite ease-out;
+                    animation: 2s bulge infinite ease-out;
+          }
+          .typing-indicator::before, .typing-indicator::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: -2px;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background-color: #E6E7ED;
+          }
+          .typing-indicator::after {
+            height: 10px;
+            width: 10px;
+            left: -10px;
+            bottom: -10px;
+          }
+          .typing-indicator span {
+            height: 5px;
+            width: 5px;
+            float: left;
+            margin: 0 1px;
+            background-color: #9E9EA1;
+            display: block;
+            border-radius: 50%;
+            opacity: 0.4;
+          }
+          .typing-indicator span:nth-of-type(1) {
+            -webkit-animation: 1s blink infinite 0.3333s;
+                    animation: 1s blink infinite 0.3333s;
+          }
+          .typing-indicator span:nth-of-type(2) {
+            -webkit-animation: 1s blink infinite 0.6666s;
+                    animation: 1s blink infinite 0.6666s;
+          }
+          .typing-indicator span:nth-of-type(3) {
+            -webkit-animation: 1s blink infinite 0.9999s;
+                    animation: 1s blink infinite 0.9999s;
+          }
+          
+          @-webkit-keyframes blink {
+            50% {
+              opacity: 1;
+            }
+          }
+          
+          @keyframes blink {
+            50% { 
+              opacity: 1;
+            }
+          }
+          @-webkit-keyframes bulge {
+            50% {
+              transform: scale(1.05);
+            }
+          }
+          @keyframes bulge {
+            50% {
+              transform: scale(1.05);
+            }
           }
 
   `;
@@ -362,6 +437,15 @@
         }
       }
   });
+
+  function typingIndicator(){
+    const typingIndicator = document.createElement("div");
+    typingIndicator.setAttribute("id", "typing-indicator");
+    typingIndicator.classList.add("typing-indicator");
+    typingIndicator.innerHTML = `<span></span><span></span><span></span>`;
+    return typingIndicator;
+  }
+
 
   setTimeout(
       () => highlightHandler.attach(),
