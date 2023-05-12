@@ -30,9 +30,9 @@
         const isSelected = !this.elemMap[id].selected
         this.elemMap[id].selected = isSelected
         if (isSelected) {
-          elem.style.border = '1px solid red'
+          elem.style.background = '#e1f1ff'
         } else {
-          elem.style.border = ''
+          elem.style.background = ''
         }
         evt.stopPropagation()
       }
@@ -169,6 +169,7 @@
     console.log(response);
     let json = JSON.parse(response);
     const result = document.createElement("div");
+    result.classList.add("multiple-choice-answers")
     for (let item of json) {
       const question = document.createElement("strong");
       const options = document.createElement("ul");
@@ -179,17 +180,17 @@
         const li = document.createElement("li");
         const span = document.createElement("span");
         li.append(span);
-        span.onclick = () => {
+        li.onclick = function() {
           if (idx === item.answer) {
-            alert("Correct! You're breath taking!");
+            this.style.background = "#c8ff77"
+            // alert("Correct! You're breath taking!");
           } else {
-            alert("Sorry, that's incorrect :(");
+            this.style.background = "#ff7979"
+            // alert("Sorry, that's incorrect :(");
           }
         }
         span.textContent = option;
-        span.style.color = "blue";
-        span.style.textDecoration = "underline";
-        span.style.cursor = "pointer";
+        li.style.cursor = "pointer";
         options.append(li);
       })
     }
@@ -201,15 +202,35 @@
   style.textContent = `/* Greasemonkey-injected styling */
 
           #rex-spymode {
-              position: fixed;
-              bottom: 0;
-              right: 0;
-              background-color: rgba(255,255,255,.8);
-              padding: 1rem;
-              border: 1px dashed #000;
-              z-index: 1000;
-              width: 50rem;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            background-color: #F7F4EF;
+            padding: 1rem;
+            1px solid #DDDAD6;
+            z-index: 1000;
+            width: 50rem;
+            color: #333;
+            border-radius: 10
+            px 10px 0px 0px;
+            padding: 15px;
+            margin-right: 5px;
+            border-radius: 10px 10px 0px 0px;
+            font-weight: bold;
           }
+
+          #rex-spymode button {
+            background-color: #60564c;
+            color: #f5f5f5;
+            font-weight: bold;
+            border-radius: 10px;
+            padding: 0.4em 0.6em;
+            border: 0px;
+            box-shadow: 2px 2px 3px lightgray;
+            display: inline-block;
+            margin-right: 0.5em;
+          }
+
           /* Each REX spymode item should be on a separate line and have padding below */
           #rex-spymode > * {
               display: block;
@@ -226,19 +247,38 @@
           #bot-log {
             overflow-y: auto;
             max-height: 40rem;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: inset 2px 2px 5px #e6e6e6;
+            padding: 10px;
           }
 
           #bot-log > li {
             overflow: initial;
             list-style-type: none;
-            background-color: lightblue;
+            background-color: #89C6F7;
             list-style-type: none;
-            border-width; 0.2em;
-            border-radius: 2em;
+            border-radius: 10px;
             padding: 0.8em 1.4em;
-            margin-bottom: 1em;
-            margin-right: 1em; 
+            margin-right: 1em;
+            margin-bottom: 0.6em;
+            box-shadow: 2px 2px 3px lightgray;
           }
+
+          .multiple-choice-answers li {
+            background-color: #D9EAFF;
+            border-radius: 9px;
+            padding: 0.2em 0.8em;
+            margin: 0.4em 0.4em;
+            color: #000;
+            box-shadow: 2px 2px 3px #5990bd;
+          }
+
+          .multiple-choice-answers a:link {
+            text-decoration: none;
+            color: #333;
+          }
+
           .typing-indicator {
             background-color: #E6E7ED;
             will-change: transform;
@@ -251,6 +291,7 @@
             -webkit-animation: 2s bulge infinite ease-out;
                     animation: 2s bulge infinite ease-out;
           }
+/*
           .typing-indicator::before, .typing-indicator::after {
             content: "";
             position: absolute;
@@ -261,12 +302,14 @@
             border-radius: 50%;
             background-color: #E6E7ED;
           }
+
           .typing-indicator::after {
             height: 10px;
             width: 10px;
             left: -10px;
             bottom: -10px;
           }
+*/
           .typing-indicator span {
             height: 5px;
             width: 5px;
@@ -277,35 +320,40 @@
             border-radius: 50%;
             opacity: 0.4;
           }
+
           .typing-indicator span:nth-of-type(1) {
             -webkit-animation: 1s blink infinite 0.3333s;
                     animation: 1s blink infinite 0.3333s;
           }
+
           .typing-indicator span:nth-of-type(2) {
             -webkit-animation: 1s blink infinite 0.6666s;
                     animation: 1s blink infinite 0.6666s;
           }
+
           .typing-indicator span:nth-of-type(3) {
             -webkit-animation: 1s blink infinite 0.9999s;
                     animation: 1s blink infinite 0.9999s;
           }
-          
+
           @-webkit-keyframes blink {
             50% {
               opacity: 1;
             }
           }
-          
+
           @keyframes blink {
-            50% { 
+            50% {
               opacity: 1;
             }
           }
+
           @-webkit-keyframes bulge {
             50% {
               transform: scale(1.05);
             }
           }
+
           @keyframes bulge {
             50% {
               transform: scale(1.05);
@@ -389,20 +437,20 @@
     formatMultipleChoice
   );
 
-  const fillingBlankBtn = findOrMake("bot-fillingblank", "button", root);
-  fillingBlankBtn.textContent = "Filling the Blank";
-  doThing(
-    fillingBlankBtn,
-    () => {
-      const selectedText = highlightHandler.selectedText
-      if (selectedText.length) {
-        return `Create 3 main concept sentences about the following content and display the most important keyword as a blank ______ : ${selectedText}`
-      } else {
-        alert("Please select some content!")
-        return
-      }
-    }
-  );
+  // const fillInTheBlankBtn = findOrMake("bot-fillintheblank", "button", root);
+  // fillInTheBlankBtn.textContent = "Fill in the Blank";
+  // doThing(
+  //   fillInTheBlankBtn,
+  //   () => {
+  //     const selectedText = highlightHandler.selectedText
+  //     if (selectedText.length) {
+  //       return `Create 3 main concept sentences about the following content and display the most important keyword as a blank ______ : ${selectedText}`
+  //     } else {
+  //       alert("Please select some content!")
+  //       return
+  //     }
+  //   }
+  // );
 
   // Pages to demo:
   // https://openstax.org/books/college-physics-2e/pages/3-4-projectile-motion
