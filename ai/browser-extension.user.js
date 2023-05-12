@@ -57,7 +57,9 @@
 
     get highlightableElements() {
       function shouldSummarizeTag(el) {
-        if (el.dataset.type === 'term' || el.dataset.type === 'page') {
+        if (el.dataset.type === 'term' ||
+            el.dataset.type === 'page' ||
+            el.classList.contains('os-math-in-para')) {
           return false
         }
         switch (el.tagName.toLowerCase()) {
@@ -143,12 +145,13 @@
           btn.disabled = false;
           console.log("Generated text:", response);
           let respText = response.choices[0].text;
-          if (formatter) {
-            respText = formatter(respText)
-          }
           const li = document.createElement("li");
-          li.innerHTML = respText;
           botLog.append(li);
+          if (formatter) {
+            li.append(formatter(respText));
+          } else {
+            li.innerHTML = respText;
+          }
         })
         .catch((error) => {
           btn.disabled = false;
@@ -160,21 +163,35 @@
   }
 
   function formatMultipleChoice(response) {
-    console.log(response)
-    let json = JSON.parse(response)
-    let result = ''
+    console.log(response);
+    let json = JSON.parse(response);
+    const result = document.createElement("div");
     for (let item of json) {
-      result += `\
-      <div>
-      <strong>${item.question}</strong>
-      <ul>
-        ${item.options.map(option => `<li>${option}</li>`).join(`\n`)}
-      </ul>
-      </div>
-      `
+      const question = document.createElement("strong");
+      const options = document.createElement("ul");
+      question.textContent = item.question;
+      result.append(question);
+      result.append(options);
+      item.options.forEach((option, idx) => {
+        const li = document.createElement("li");
+        const span = document.createElement("span");
+        li.append(span);
+        span.onclick = () => {
+          if (idx === item.answer) {
+            alert("Correct! You're breath taking!");
+          } else {
+            alert("Sorry, that's incorrect :(");
+          }
+        }
+        span.textContent = option;
+        span.style.color = "blue";
+        span.style.textDecoration = "underline";
+        span.style.cursor = "pointer";
+        options.append(li);
+      })
     }
 
-    return result
+    return result;
   }
 
   const style = window.document.createElement("style");
@@ -281,7 +298,7 @@
     multipleChoiceBtn,
     () => {
       const selectedText = highlightHandler.selectedText
-      const format = `in the following format: [{"question": "What color is the sky?", "options": ["red", "blue", "yellow"], "answer": 2}, ...]`
+      const format = `in the following format: [{"question": "What color is the sky?", "options": ["red", "blue", "yellow"], "answer": 1}, ...]`
       return selectedText.length
         ? `Generate 3 multiple choice questions in JSON format from the following text: ${selectedText}` + format
         : `Generate 3 multiple choice questions in JSON format from the following URL in HTML: ${document.location.href}` + format
