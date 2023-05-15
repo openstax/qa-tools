@@ -111,7 +111,7 @@
         },
         data: JSON.stringify({
           prompt: prompt,
-          max_tokens: 1000,
+          max_tokens: 3000,
           n: 1,
           stop: null,
           temperature: 0.7,
@@ -429,7 +429,7 @@
     multipleChoiceBtn,
     () => {
       const selectedText = highlightHandler.selectedText
-      const format = `in the following format: [{"question": "What color is the sky?", "options": ["red", "blue", "yellow"], "answer": 1}, ...]`
+      const format = `in the following format, index for answers starts at 0: [{"question": "What color is the sky?", "options": ["red", "blue", "yellow"], "answer": 1}, ...]`
       return selectedText.length
         ? `Generate 3 multiple choice questions in JSON format from the following text: ${selectedText}` + format
         : `Generate 3 multiple choice questions in JSON format from the following URL in HTML: ${document.location.href}` + format
