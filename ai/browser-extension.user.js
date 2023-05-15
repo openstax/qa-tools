@@ -403,7 +403,7 @@
       const selectedText = highlightHandler.selectedText
       return selectedText.length
         ? `Summarize the following text in 100 words or less: ${selectedText}`
-        : `Summarize the following URL in 100 words: ${document.location.href}`
+        : `Summarize the following URL in 100 words but exclude the first sentence of your generated text when it describes Openstax in general: ${document.location.href}`
     }
   );
 
@@ -444,7 +444,7 @@
   //   () => {
   //     const selectedText = highlightHandler.selectedText
   //     if (selectedText.length) {
-  //       return `Create 3 main concept sentences about the following content and display the most important keyword as a blank ______ : ${selectedText}`
+  //       return `Create 3 sentences about the following content and display the most important keyword as a blank line like e.g.  ______ : ${selectedText}`
   //     } else {
   //       alert("Please select some content!")
   //       return
